@@ -1,4 +1,5 @@
 local dt = require "darktable"
+local du = require "lib/dtutils"
 
 local script_data = {}
 
@@ -9,6 +10,8 @@ rename.module_installed = false
 
 local MODULE_NAME = "rename"
 local DEFAULT_ENTRY = "{filmroll}{sequence}.{extension}"
+
+du.check_min_api_version("7.0.0", MODULE_NAME)
 
 -- string pref helper functions, from darktable-org/lua-scripts/video_ffmpeg.lua
 local function string_pref_read(name, default)
