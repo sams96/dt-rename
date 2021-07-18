@@ -91,7 +91,7 @@ local function module()
 			name_entry
 		},
 		dt.new_widget("button") {
-			label = "go",
+			label = "rename collection",
 			clicked_callback = rename_files
 		}
 	}
