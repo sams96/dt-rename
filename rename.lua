@@ -10,6 +10,7 @@ rename.module_installed = false
 
 local MODULE_NAME = "rename"
 local DEFAULT_ENTRY = "{filmroll}{sequence}.{extension}"
+local ENTRY_PREFERENCE_KEY = "new_name"
 
 du.check_min_api_version("7.0.0", MODULE_NAME)
 
@@ -53,7 +54,7 @@ local name_entry = dt.new_widget("entry") {
 		"- {sequence} - the number of the image in the sequence\n"..
 		"- {extension} - the original extension of the file\n"..
 		"- {filmroll} - the name of the filmroll that the image is in",
-	text = string_pref_read("new_name", DEFAULT_ENTRY),
+	text = string_pref_read(ENTRY_PREFERENCE_KEY, DEFAULT_ENTRY),
 }
 
 local function rename_files(self)
@@ -65,8 +66,8 @@ local function rename_files(self)
 	end
 
 	-- set & get entry value
-	string_pref_write("new_name", "text")(name_entry)
-	local name_input = string_pref_read("new_name", DEFAULT_ENTRY)
+	string_pref_write(ENTRY_PREFERENCE_KEY, "text")(name_entry)
+	local name_input = string_pref_read(ENTRY_PREFERENCE_KEY, DEFAULT_ENTRY)
 
 	-- move to temp locations to avoid collisions.
 	for i, v in ipairs(files) do
