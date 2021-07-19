@@ -82,6 +82,14 @@ local function rename_files(self)
 		table.insert(oldnames, tostring(v))
 	end
 
+	-- set up temp job indicator
+	local tempjob = dt.gui.create_job(
+		string.format("temp rename (%d image" .. (#files == 1 and "" or "s") .. ")", #files),
+		true
+	)
+	tempjob.percent = 0.0
+	local job_increment = 1.0 / #files
+
 	-- set & get entry value
 	string_pref_write(ENTRY_PREFERENCE_KEY, "text")(name_entry)
 	local name_input = string_pref_read(ENTRY_PREFERENCE_KEY, DEFAULT_ENTRY)
@@ -89,18 +97,30 @@ local function rename_files(self)
 	-- move to temp locations to avoid collisions.
 	for i, v in ipairs(files) do
 		dt.database.move_image(v, v.film, get_file_name(os.tmpname()))
+		tempjob.percent = tempjob.percent + job_increment
 	end
+	tempjob.valid = false
+
+	-- set up job indicator
+	local job = dt.gui.create_job(
+		string.format("rename images (%d image" .. (#files == 1 and "" or "s") .. ")", #files),
+		true
+	)
+	job.percent = 0.0
 
 	local filename_mappings = {}
 
+	-- move files
 	for i, v in ipairs(files) do
 		filename_mappings.sequence = string.format("%02d", i)
 		filename_mappings.extension = get_file_extension(tostring(oldnames[i])) or ".noext"
 		filename_mappings.filmroll = get_file_name(tostring(v.film))
 
 		local name = format_string(name_input, filename_mappings)
-		 dt.database.move_image(v, v.film, name)
+		dt.database.move_image(v, v.film, name)
+		job.percent = job.percent + job_increment
 	end
+	job.valid = false
 end
 
 local function module()
